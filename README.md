@@ -11,9 +11,6 @@ This project is an interactive data analysis dashboard built in Python that expl
 ## Technologies Used:
 Python, Pandas, Seaborn, Matplotlib, IPyWidgets, Jupyter Notebook
 
-## Usage:
-Open the notebook and run all cells. Use the age slider widget to explore how survival patterns change across different age groups, genders, and passenger classes. Insights update automatically with every selection.
-
 ## Ideal For:
 - Data science students, machine learning learners, and those interested in interactive statistical visualizations or the Titanic dataset.
 - Feel free to adapt this description further for your portfolio or GitHub repository!
