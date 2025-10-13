@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fantasy Dashboards – TITANIC</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f0f4f8;
+    color: #333;
+  }
+  h1 {
+    color: #1b4965;
+  }
+  .control-panel {
+    margin-bottom: 20px;
+  }
+  label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  input[type=range] {
+    vertical-align: middle;
+  }
+  #summary {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    white-space: pre-line;
+    margin-bottom: 25px;
+  }
+  #charts img {
+    max-width: 100%;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    box-shadow: 0 0 5px #ccc;
+  }
+  button {
+    background-color: #1b4965;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  button:hover {
+    background: #3a7ca5;
+  }
+</style>
+</head>
+<body>
+
+<h1>Fantasy Dashboards – TITANIC</h1>
+
+<div class="control-panel">
+  <label for="ageRange">Max Age:</label>
+  <input type="range" id="ageRange" min="0" max="80" value="80" step="1" oninput="ageLabel.textContent = this.value" />
+  <span id="ageLabel">80</span>
+  <button onclick="loadDashboard()">Load Dashboard</button>
+</div>
+
+<h2>Summary</h2>
+<div id="summary">Select max age and click "Load Dashboard".</div>
+
+<h2>Charts</h2>
+<div id="charts"></div>
+
+<script>
+async function loadDashboard() {
+  const maxAge = document.getElementById('ageRange').value;
+  const url = `http://127.0.0.1:5000/api/titanic?min_age=0&max_age=${maxAge}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Error ${response.status}`);
+
+    const data = await response.json();
+
+    // Fill summary
+    const s = data.summary;
+    const summaryText = 
+      `Total Passengers: ${s.total_passengers}\n` +
+      `Survived: ${s.survived_count} (${s.survival_rate}%)\n` +
+      `Average Age: ${s.average_age}\n` +
+      `Average Male Age: ${s.average_age_male}\n` +
+      `Average Female Age: ${s.average_age_female}\n` +
+      `Class Counts: 1st - ${s.class_counts['1'] || 0}, 2nd - ${s.class_counts['2'] || 0}, 3rd - ${s.class_counts['3'] || 0}\n` +
+      `Male Survival Rate: ${s.male_survival_rate}%\n` +
+      `Female Survival Rate: ${s.female_survival_rate}%\n` +
+      `Gender More Likely to Survive: ${s.gender_more_likely_to_survive}`;
+
+    document.getElementById('summary').textContent = summaryText;
+
+    // Fill charts
+    const chartsDiv = document.getElementById('charts');
+    chartsDiv.innerHTML = '';
+    const charts = data.charts;
+    for (const key in charts) {
+      const img = document.createElement('img');
+      img.src = charts[key];
+      img.alt = key;
+      chartsDiv.appendChild(img);
+    }
+  } catch (err) {
+    document.getElementById('summary').textContent = 'Failed to load data: ' + err.message;
+    document.getElementById('charts').innerHTML = '';
+  }
+}
+</script>
+</body>
+</html>
